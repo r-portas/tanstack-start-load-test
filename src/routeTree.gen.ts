@@ -9,20 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as KitchenSinkRouteImport } from './routes/kitchen-sink'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as TickerRouteImport } from './routes/$ticker'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BlogIndexRouteImport } from './routes/blog/index'
-import { Route as BlogPostRouteImport } from './routes/blog/post'
 
-const KitchenSinkRoute = KitchenSinkRouteImport.update({
-  id: '/kitchen-sink',
-  path: '/kitchen-sink',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const TickerRoute = TickerRouteImport.update({
+  id: '/$ticker',
+  path: '/$ticker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -30,75 +22,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogPostRoute = BlogPostRouteImport.update({
-  id: '/blog/post',
-  path: '/blog/post',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/kitchen-sink': typeof KitchenSinkRoute
-  '/blog/post': typeof BlogPostRoute
-  '/blog/': typeof BlogIndexRoute
+  '/$ticker': typeof TickerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/kitchen-sink': typeof KitchenSinkRoute
-  '/blog/post': typeof BlogPostRoute
-  '/blog': typeof BlogIndexRoute
+  '/$ticker': typeof TickerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/kitchen-sink': typeof KitchenSinkRoute
-  '/blog/post': typeof BlogPostRoute
-  '/blog/': typeof BlogIndexRoute
+  '/$ticker': typeof TickerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/kitchen-sink' | '/blog/post' | '/blog/'
+  fullPaths: '/' | '/$ticker'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/kitchen-sink' | '/blog/post' | '/blog'
-  id:
-    | '__root__'
-    | '/'
-    | '/dashboard'
-    | '/kitchen-sink'
-    | '/blog/post'
-    | '/blog/'
+  to: '/' | '/$ticker'
+  id: '__root__' | '/' | '/$ticker'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  KitchenSinkRoute: typeof KitchenSinkRoute
-  BlogPostRoute: typeof BlogPostRoute
-  BlogIndexRoute: typeof BlogIndexRoute
+  TickerRoute: typeof TickerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/kitchen-sink': {
-      id: '/kitchen-sink'
-      path: '/kitchen-sink'
-      fullPath: '/kitchen-sink'
-      preLoaderRoute: typeof KitchenSinkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/$ticker': {
+      id: '/$ticker'
+      path: '/$ticker'
+      fullPath: '/$ticker'
+      preLoaderRoute: typeof TickerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -108,29 +65,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/': {
-      id: '/blog/'
-      path: '/blog'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/post': {
-      id: '/blog/post'
-      path: '/blog/post'
-      fullPath: '/blog/post'
-      preLoaderRoute: typeof BlogPostRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  KitchenSinkRoute: KitchenSinkRoute,
-  BlogPostRoute: BlogPostRoute,
-  BlogIndexRoute: BlogIndexRoute,
+  TickerRoute: TickerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
