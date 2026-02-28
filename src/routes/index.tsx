@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  STOCKS,
+  getStocks,
   formatChange,
   formatChangePercent,
   formatMarketCap,
@@ -23,6 +23,9 @@ import {
 
 export const Route = createFileRoute("/")({
   component: MarketOverview,
+  loader: () => ({
+    stocks: getStocks(),
+  })
 });
 
 // ---------------------------------------------------------------------------
@@ -66,15 +69,15 @@ function trendColor(trend: Trend): string {
   return "text-muted-foreground";
 }
 
-function MarketSummaryStrip() {
-  const mostActive = STOCKS.reduce((a, b) => (a.volume > b.volume ? a : b));
-  const topGainer = STOCKS.reduce((a, b) =>
+function MarketSummaryStrip({ stocks }: { stocks: StockWithMeta[] }) {
+  const mostActive = stocks.reduce((a, b) => (a.volume > b.volume ? a : b));
+  const topGainer = stocks.reduce((a, b) =>
     a.changePercent > b.changePercent ? a : b,
   );
-  const topLoser = STOCKS.reduce((a, b) =>
+  const topLoser = stocks.reduce((a, b) =>
     a.changePercent < b.changePercent ? a : b,
   );
-  const totalVol = STOCKS.reduce((sum, s) => sum + s.volume, 0);
+  const totalVol = stocks.reduce((sum, s) => sum + s.volume, 0);
 
   const cells = [
     {
@@ -136,6 +139,8 @@ function StockTableRow({
   return (
     <TableRow
       className="cursor-pointer hover:bg-card"
+      role="link"
+      tabIndex={0}
       onClick={onClick}
     >
       <TableCell className="font-mono font-bold text-primary">
@@ -171,12 +176,13 @@ function StockTableRow({
 // ---------------------------------------------------------------------------
 
 function MarketOverview() {
+  const { stocks } = Route.useLoaderData();
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopBar />
-      <MarketSummaryStrip />
+      <MarketSummaryStrip stocks={stocks} />
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -207,7 +213,7 @@ function MarketOverview() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {STOCKS.map((stock) => (
+          {stocks.map((stock) => (
             <StockTableRow
               key={stock.ticker}
               stock={stock}

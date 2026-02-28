@@ -22,18 +22,23 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import {
-  ORDER_BOOK,
-  STOCKS_BY_TICKER,
+  getOrders,
+  getStockByTicker,
   formatChange,
   formatChangePercent,
   formatMarketCap,
   formatPrice,
   formatVolume,
   type Trend,
+  type OrderBookEntry,
 } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/$ticker")({
   component: StockDetail,
+  loader: ({ params }) => ({
+    stock: getStockByTicker(params.ticker),
+    orders: getOrders(params.ticker),
+  }),
 });
 
 function trendColor(trend: Trend): string {
@@ -140,11 +145,7 @@ function PriceChart({
 // Order Book
 // ---------------------------------------------------------------------------
 
-function OrderBook({ ticker }: { ticker: string }) {
-  const orders = ORDER_BOOK.filter(
-    (o) => o.ticker === ticker && o.status === "pending",
-  );
-
+function OrderBook({ orders }: { orders: OrderBookEntry[] }) {
   const bids = orders
     .filter((o) => o.type === "buy")
     .sort((a, b) => b.limitPrice - a.limitPrice);
@@ -402,7 +403,7 @@ function TradeForm({
 
 function StockDetail() {
   const { ticker } = Route.useParams();
-  const stock = STOCKS_BY_TICKER[ticker.toUpperCase()];
+  const { stock, orders } = Route.useLoaderData();
 
   if (!stock) {
     return (
@@ -441,7 +442,7 @@ function StockDetail() {
             priceHistory={stock.priceHistory}
             trend={stock.trend}
           />
-          <OrderBook ticker={stock.ticker} />
+          <OrderBook orders={orders} />
         </div>
 
         {/* Right column */}

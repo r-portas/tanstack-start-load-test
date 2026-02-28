@@ -10,7 +10,7 @@ import { cn } from "src/lib/utils";
 
 function Heading({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <p
+    <h2
       className={cn(
         "font-mono text-xs uppercase tracking-widest text-muted-foreground",
         className,

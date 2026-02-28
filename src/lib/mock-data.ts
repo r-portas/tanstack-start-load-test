@@ -219,13 +219,20 @@ function generateOrderBook(stocks: StockWithMeta[]): OrderBookEntry[] {
 // Exported data — computed once at module load time
 // ---------------------------------------------------------------------------
 
-export const STOCKS: StockWithMeta[] = SEED_CONFIGS.map(buildStockWithMeta);
+export function getStocks(): StockWithMeta[] {
+  return SEED_CONFIGS.map(buildStockWithMeta);
+}
 
-export const STOCKS_BY_TICKER: Record<string, StockWithMeta> = Object.fromEntries(
-  STOCKS.map((s) => [s.ticker, s]),
-);
+export function getStockByTicker(ticker: string): StockWithMeta | undefined {
+  const stocks = getStocks();
+  return stocks.find((s) => s.ticker === ticker);
+}
 
-export const ORDER_BOOK: OrderBookEntry[] = generateOrderBook(STOCKS);
+export function getOrders(ticker: string): OrderBookEntry[] {
+  const orderBook = generateOrderBook(getStocks());
+  return orderBook.filter((o) => o.ticker === ticker && o.status === "pending");
+}
+
 
 // ---------------------------------------------------------------------------
 // Formatting helpers
