@@ -7,7 +7,7 @@ An example of instrumenting a [TanStack Start](https://tanstack.com/start) app w
 - **TanStack Start app** — a mock stock exchange with per-route HTTP metrics exposed at `/metrics` via [prom-client](https://github.com/siimon/prom-client)
 - **Prometheus** — scrapes the app's `/metrics` endpoint every second and receives k6 metrics via remote write
 - **Grafana** — pre-provisioned with Prometheus as a datasource and an app metrics dashboard (request rate, latency percentiles, error rate, Node.js runtime)
-- **k6 load tests** — three scripts modelling different traffic patterns, pushing results directly into Prometheus
+- **k6 load tests** — four scripts modelling different traffic patterns, pushing results directly into Prometheus
 
 ## Tech Stack
 
@@ -25,17 +25,18 @@ An example of instrumenting a [TanStack Start](https://tanstack.com/start) app w
 docker compose up --build
 ```
 
-| Service    | URL                   |
-|------------|-----------------------|
-| App        | http://localhost:3000 |
-| Prometheus | http://localhost:9090 |
-| Grafana    | http://localhost:3001 |
+| Service        | URL                   |
+| -------------- | --------------------- |
+| App            | http://localhost:3000 |
+| Prometheus     | http://localhost:9090 |
+| Grafana        | http://localhost:3001 |
+| k6 Dashboard\* | http://localhost:5665 |
 
-Grafana opens with no login required. The **App Metrics** dashboard is pre-loaded.
+Grafana opens with no login required. The **App Metrics** dashboard is pre-loaded. The k6 dashboard is only available while a test is running.
 
 ## Running load tests
 
-The load tests run inside Docker and push results to Prometheus via remote write, so metrics from both the app and k6 appear in Grafana in real time.
+The load tests run inside Docker and push results to Prometheus via remote write, so metrics from both the app and k6 appear in Grafana in real time. A live k6 dashboard is also available at http://localhost:5665 while the test is running.
 
 **Run the default load test** (`k6/load.js` — ramps up to ~50 VUs with three concurrent scenarios):
 
@@ -43,21 +44,33 @@ The load tests run inside Docker and push results to Prometheus via remote write
 docker compose run --rm k6
 ```
 
+The k6 dashboard will be available at http://localhost:5665 throughout the test run.
+
 **Run a specific script:**
 
 ```bash
-docker compose run --rm k6 run --out experimental-prometheus-rw /scripts/smoke.js
-docker compose run --rm k6 run --out experimental-prometheus-rw /scripts/soak.js
-docker compose run --rm k6 run --out experimental-prometheus-rw /scripts/load.js
+docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/smoke.js
+docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/soak.js
+docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/load.js
+docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/stress.js
 ```
+
+Alternatively, run k6 as part of the full stack:
+
+```bash
+docker compose up k6
+```
+
+This starts the app, Prometheus, Grafana, and k6 together, with k6 waiting for all services to be healthy before starting the test.
 
 ### Load test scripts
 
-| Script       | Description |
-|--------------|-------------|
-| `smoke.js`   | Minimal traffic — verifies the app works correctly before a full test run |
-| `load.js`    | Realistic mixed load — market watchers, ticker browsers, and a hotspot spike |
-| `soak.js`    | Extended duration — checks for memory leaks and degradation over time |
+| Script      | Description                                                                       |
+| ----------- | --------------------------------------------------------------------------------- |
+| `smoke.js`  | Minimal traffic — verifies the app works correctly before a full test run         |
+| `load.js`   | Realistic mixed load — market watchers, ticker browsers, and a hotspot spike      |
+| `soak.js`   | Extended duration — checks for memory leaks and degradation over time             |
+| `stress.js` | Stepped ramp — gradually increases VUs (10 → 50 → 100 → 500) to find limits      |
 
 ## Instrumenting TanStack Start with prom-client
 

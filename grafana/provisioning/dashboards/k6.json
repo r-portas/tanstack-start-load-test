@@ -156,10 +156,7 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
+                  "dash": [10, 10],
                   "fill": "dash"
                 }
               },
@@ -197,10 +194,7 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
+                  "dash": [10, 10],
                   "fill": "dash"
                 }
               }
@@ -1271,10 +1265,7 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
+                  "dash": [10, 10],
                   "fill": "dash"
                 }
               }
@@ -1296,10 +1287,7 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
+                  "dash": [10, 10],
                   "fill": "dash"
                 }
               }
@@ -1314,10 +1302,7 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [
-                    10,
-                    10
-                  ],
+                  "dash": [10, 10],
                   "fill": "dash"
                 }
               },
@@ -1522,9 +1507,7 @@
           "countRows": false,
           "enablePagination": true,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "frameIndex": 2,
@@ -1599,27 +1582,19 @@
           "options": {
             "fields": {
               "Value #B": {
-                "aggregations": [
-                  "min"
-                ],
+                "aggregations": ["min"],
                 "operation": "aggregate"
               },
               "Value #C": {
-                "aggregations": [
-                  "max"
-                ],
+                "aggregations": ["max"],
                 "operation": "aggregate"
               },
               "Value #D": {
-                "aggregations": [
-                  "mean"
-                ],
+                "aggregations": ["mean"],
                 "operation": "aggregate"
               },
               "Value #E": {
-                "aggregations": [
-                  "mean"
-                ],
+                "aggregations": ["mean"],
                 "operation": "aggregate"
               },
               "method": {
@@ -1764,9 +1739,7 @@
           "countRows": false,
           "enablePagination": true,
           "fields": "",
-          "reducer": [
-            "sum"
-          ],
+          "reducer": ["sum"],
           "show": false
         },
         "frameIndex": 2,
@@ -1799,10 +1772,7 @@
         {
           "id": "labelsToFields",
           "options": {
-            "keepLabels": [
-              "__name__",
-              "check"
-            ],
+            "keepLabels": ["__name__", "check"],
             "mode": "columns"
           }
         },
@@ -1811,9 +1781,7 @@
           "options": {
             "fields": {
               "Value": {
-                "aggregations": [
-                  "mean"
-                ],
+                "aggregations": ["mean"],
                 "operation": "aggregate"
               },
               "check": {
@@ -1821,10 +1789,7 @@
                 "operation": "groupby"
               },
               "k6_checks_rate": {
-                "aggregations": [
-                  "sum",
-                  "count"
-                ],
+                "aggregations": ["sum", "count"],
                 "operation": "aggregate"
               }
             }
@@ -1974,12 +1939,9 @@
       "type": "text"
     }
   ],
-  "refresh": "",
+  "refresh": "5s",
   "schemaVersion": 39,
-  "tags": [
-    "prometheus",
-    "k6"
-  ],
+  "tags": ["prometheus", "k6"],
   "templating": {
     "list": [
       {

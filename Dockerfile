@@ -1,4 +1,4 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1-alpine AS base
 WORKDIR /app
 
 FROM base AS build
@@ -10,6 +10,8 @@ COPY . .
 RUN bun run build
 
 FROM base AS production
+
+RUN apk add --no-cache wget
 
 COPY --from=build /app/.output /app
 EXPOSE 3000
