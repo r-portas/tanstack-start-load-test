@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MetricsRouteImport } from './routes/metrics'
+import { Route as HealthRouteImport } from './routes/health'
 import { Route as TickerRouteImport } from './routes/$ticker'
 import { Route as IndexRouteImport } from './routes/index'
 
 const MetricsRoute = MetricsRouteImport.update({
   id: '/metrics',
   path: '/metrics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HealthRoute = HealthRouteImport.update({
+  id: '/health',
+  path: '/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TickerRoute = TickerRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$ticker': typeof TickerRoute
+  '/health': typeof HealthRoute
   '/metrics': typeof MetricsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$ticker': typeof TickerRoute
+  '/health': typeof HealthRoute
   '/metrics': typeof MetricsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$ticker': typeof TickerRoute
+  '/health': typeof HealthRoute
   '/metrics': typeof MetricsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$ticker' | '/metrics'
+  fullPaths: '/' | '/$ticker' | '/health' | '/metrics'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$ticker' | '/metrics'
-  id: '__root__' | '/' | '/$ticker' | '/metrics'
+  to: '/' | '/$ticker' | '/health' | '/metrics'
+  id: '__root__' | '/' | '/$ticker' | '/health' | '/metrics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TickerRoute: typeof TickerRoute
+  HealthRoute: typeof HealthRoute
   MetricsRoute: typeof MetricsRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/metrics'
       fullPath: '/metrics'
       preLoaderRoute: typeof MetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/health': {
+      id: '/health'
+      path: '/health'
+      fullPath: '/health'
+      preLoaderRoute: typeof HealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$ticker': {
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TickerRoute: TickerRoute,
+  HealthRoute: HealthRoute,
   MetricsRoute: MetricsRoute,
 }
 export const routeTree = rootRouteImport
