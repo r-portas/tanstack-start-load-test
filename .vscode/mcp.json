@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "shadcn": {
+      "command": "bunx",
+      "args": ["shadcn@latest", "mcp"],
+      "env": {},
+      "type": "stdio"
+    },
+    "tanstack": {
+      "command": "bunx",
+      "args": ["@tanstack/cli@latest", "mcp"],
+      "env": {},
+      "type": "stdio"
+    }
+  },
+  "inputs": []
+}

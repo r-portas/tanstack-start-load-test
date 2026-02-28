@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "bunx",
+      "args": ["shadcn@latest", "mcp"]
+    },
+    "tanstack": {
+      "command": "bunx",
+      "args": ["@tanstack/cli@latest", "mcp"]
+    }
+  }
+}
