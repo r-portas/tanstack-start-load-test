@@ -9,15 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as KitchenSinkRouteImport } from './routes/kitchen-sink'
+import { Route as MetricsRouteImport } from './routes/metrics'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BlogIndexRouteImport } from './routes/blog/index'
-import { Route as BlogPostRouteImport } from './routes/blog/post'
 
-const KitchenSinkRoute = KitchenSinkRouteImport.update({
-  id: '/kitchen-sink',
-  path: '/kitchen-sink',
+const MetricsRoute = MetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -30,68 +28,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogPostRoute = BlogPostRouteImport.update({
-  id: '/blog/post',
-  path: '/blog/post',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
-  '/kitchen-sink': typeof KitchenSinkRoute
-  '/blog/post': typeof BlogPostRoute
-  '/blog/': typeof BlogIndexRoute
+  '/metrics': typeof MetricsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
-  '/kitchen-sink': typeof KitchenSinkRoute
-  '/blog/post': typeof BlogPostRoute
-  '/blog': typeof BlogIndexRoute
+  '/metrics': typeof MetricsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
-  '/kitchen-sink': typeof KitchenSinkRoute
-  '/blog/post': typeof BlogPostRoute
-  '/blog/': typeof BlogIndexRoute
+  '/metrics': typeof MetricsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/kitchen-sink' | '/blog/post' | '/blog/'
+  fullPaths: '/' | '/dashboard' | '/metrics'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/kitchen-sink' | '/blog/post' | '/blog'
-  id:
-    | '__root__'
-    | '/'
-    | '/dashboard'
-    | '/kitchen-sink'
-    | '/blog/post'
-    | '/blog/'
+  to: '/' | '/dashboard' | '/metrics'
+  id: '__root__' | '/' | '/dashboard' | '/metrics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
-  KitchenSinkRoute: typeof KitchenSinkRoute
-  BlogPostRoute: typeof BlogPostRoute
-  BlogIndexRoute: typeof BlogIndexRoute
+  MetricsRoute: typeof MetricsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/kitchen-sink': {
-      id: '/kitchen-sink'
-      path: '/kitchen-sink'
-      fullPath: '/kitchen-sink'
-      preLoaderRoute: typeof KitchenSinkRouteImport
+    '/metrics': {
+      id: '/metrics'
+      path: '/metrics'
+      fullPath: '/metrics'
+      preLoaderRoute: typeof MetricsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -108,39 +82,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/': {
-      id: '/blog/'
-      path: '/blog'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog/post': {
-      id: '/blog/post'
-      path: '/blog/post'
-      fullPath: '/blog/post'
-      preLoaderRoute: typeof BlogPostRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
-  KitchenSinkRoute: KitchenSinkRoute,
-  BlogPostRoute: BlogPostRoute,
-  BlogIndexRoute: BlogIndexRoute,
+  MetricsRoute: MetricsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
