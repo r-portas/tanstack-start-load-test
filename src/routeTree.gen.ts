@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MetricsRouteImport } from './routes/metrics'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as TickerRouteImport } from './routes/$ticker'
 import { Route as IndexRouteImport } from './routes/index'
 
 const MetricsRoute = MetricsRouteImport.update({
@@ -18,9 +18,9 @@ const MetricsRoute = MetricsRouteImport.update({
   path: '/metrics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const TickerRoute = TickerRouteImport.update({
+  id: '/$ticker',
+  path: '/$ticker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,31 +31,31 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/$ticker': typeof TickerRoute
   '/metrics': typeof MetricsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/$ticker': typeof TickerRoute
   '/metrics': typeof MetricsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/$ticker': typeof TickerRoute
   '/metrics': typeof MetricsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/metrics'
+  fullPaths: '/' | '/$ticker' | '/metrics'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/metrics'
-  id: '__root__' | '/' | '/dashboard' | '/metrics'
+  to: '/' | '/$ticker' | '/metrics'
+  id: '__root__' | '/' | '/$ticker' | '/metrics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  TickerRoute: typeof TickerRoute
   MetricsRoute: typeof MetricsRoute
 }
 
@@ -68,11 +68,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MetricsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/$ticker': {
+      id: '/$ticker'
+      path: '/$ticker'
+      fullPath: '/$ticker'
+      preLoaderRoute: typeof TickerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,7 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  TickerRoute: TickerRoute,
   MetricsRoute: MetricsRoute,
 }
 export const routeTree = rootRouteImport
