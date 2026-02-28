@@ -38,21 +38,18 @@ Grafana opens with no login required. The **App Metrics** dashboard is pre-loade
 
 The load tests run inside Docker and push results to Prometheus via remote write, so metrics from both the app and k6 appear in Grafana in real time. A live k6 dashboard is also available at http://localhost:5665 while the test is running.
 
-**Run the default load test** (`k6/load.js` — ramps up to ~50 VUs with three concurrent scenarios):
-
-```bash
-docker compose run --rm k6
-```
-
 The k6 dashboard will be available at http://localhost:5665 throughout the test run.
 
-**Run a specific script:**
+**Run a specific script** using the `K6_SCRIPT` environment variable (defaults to `load.js`):
 
 ```bash
-docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/smoke.js
-docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/soak.js
-docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/load.js
-docker compose run --rm k6 run --out experimental-prometheus-rw --out web-dashboard /scripts/stress.js
+K6_SCRIPT=smoke.js docker compose up --build
+
+K6_SCRIPT=load.js docker compose up --build
+
+K6_SCRIPT=soak.js docker compose up --build
+
+K6_SCRIPT=stress.js docker compose up --build
 ```
 
 Alternatively, run k6 as part of the full stack:
@@ -65,12 +62,12 @@ This starts the app, Prometheus, Grafana, and k6 together, with k6 waiting for a
 
 ### Load test scripts
 
-| Script      | Description                                                                       |
-| ----------- | --------------------------------------------------------------------------------- |
-| `smoke.js`  | Minimal traffic — verifies the app works correctly before a full test run         |
-| `load.js`   | Realistic mixed load — market watchers, ticker browsers, and a hotspot spike      |
-| `soak.js`   | Extended duration — checks for memory leaks and degradation over time             |
-| `stress.js` | Stepped ramp — gradually increases VUs (10 → 50 → 100 → 500) to find limits      |
+| Script      | Description                                                                  |
+| ----------- | ---------------------------------------------------------------------------- |
+| `smoke.js`  | Minimal traffic — verifies the app works correctly before a full test run    |
+| `load.js`   | Realistic mixed load — market watchers, ticker browsers, and a hotspot spike |
+| `soak.js`   | Extended duration — checks for memory leaks and degradation over time        |
+| `stress.js` | Stepped ramp — gradually increases VUs (10 → 50 → 100 → 500) to find limits  |
 
 ## Instrumenting TanStack Start with prom-client
 

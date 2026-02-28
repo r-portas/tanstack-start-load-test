@@ -55,7 +55,7 @@ services:
       - BASE_URL=http://app:3000
       - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
       - K6_WEB_DASHBOARD_OPEN=false
-    command: run --out experimental-prometheus-rw --out web-dashboard /scripts/load.js
+    command: run --out experimental-prometheus-rw --out web-dashboard /scripts/${K6_SCRIPT:-load.js}
     depends_on:
       app:
         condition: service_healthy
