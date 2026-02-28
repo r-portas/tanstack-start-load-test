@@ -1,107 +1,223 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "src/components/ui/badge";
-import { Button } from "src/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
-import { Separator } from "src/components/ui/separator";
-import { Display, Heading, Lead, Typography } from "src/components/ui/typography";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+
+import { Sparkline } from "@/components/sparkline";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  STOCKS,
+  formatChange,
+  formatChangePercent,
+  formatMarketCap,
+  formatPrice,
+  formatVolume,
+  type StockWithMeta,
+  type Trend,
+} from "@/lib/mock-data";
 
 export const Route = createFileRoute("/")({
-  component: Landing,
+  component: MarketOverview,
 });
 
-const features = [
-  {
-    title: "Type-safe routing",
-    description:
-      "File-based routes with full TypeScript inference. Navigate with confidence — if it compiles, the route exists.",
-  },
-  {
-    title: "Design tokens built in",
-    description:
-      "A dark-mode-first palette with greenish-tinted neutrals, two variable fonts, and a consistent spacing scale.",
-  },
-  {
-    title: "Component library ready",
-    description:
-      "shadcn/ui components pre-configured for this theme. Add what you need, delete what you don't.",
-  },
-  {
-    title: "Fast by default",
-    description:
-      "Bun as the runtime and package manager. Vite for bundling. SSR with TanStack Start.",
-  },
-  {
-    title: "Opinionated typography",
-    description:
-      "Newsreader for headings and captions. Archivo for everything else. A full set of typography components.",
-  },
-  {
-    title: "Lint and format included",
-    description:
-      "oxlint and oxfmt configured out of the box. Consistent code style without the setup friction.",
-  },
-];
+// ---------------------------------------------------------------------------
+// Top Bar
+// ---------------------------------------------------------------------------
 
-function Landing() {
+function TopBar() {
+  const [time, setTime] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const formatted = time.toTimeString().slice(0, 8);
+
   return (
-    <div className="space-y-20 py-16">
-      {/* Hero */}
-      <section className="mx-auto max-w-3xl space-y-6 text-center">
-        <Badge variant="outline" className="mb-2">
-          App Template v1.0
-        </Badge>
-        <Display className="leading-tight">The foundation your next project deserves</Display>
-        <Lead className="mx-auto max-w-xl">
-          A full-stack React template with TanStack Start, shadcn/ui, and a dark theme that&apos;s
-          actually pleasant to look at.
-        </Lead>
-        <div className="flex items-center justify-center gap-3 pt-2">
-          <Button size="lg">Get started</Button>
-          <Button size="lg" variant="outline">
-            View on GitHub
-          </Button>
-        </div>
-      </section>
+    <div className="flex items-center justify-between border-b border-border bg-card px-4 py-2">
+      <span className="font-mono text-base font-bold tracking-widest text-primary">
+        FSTR Exchange
+      </span>
+      <div className="flex items-center gap-3">
+        <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+          Session
+        </span>
+        <span className="font-mono text-sm text-foreground" suppressHydrationWarning>
+          {formatted}
+        </span>
+      </div>
+    </div>
+  );
+}
 
-      <Separator />
+// ---------------------------------------------------------------------------
+// Market Summary Strip
+// ---------------------------------------------------------------------------
 
-      {/* Features */}
-      <section>
-        <div className="mb-10 text-center">
-          <Heading level={2} className="mb-3">
-            Everything you need to ship
-          </Heading>
-          <Typography variant="muted" className="mx-auto max-w-md">
-            Carefully chosen defaults so you can focus on your product from the first commit.
-          </Typography>
+function trendColor(trend: Trend): string {
+  if (trend === "up") return "text-[var(--positive)]";
+  if (trend === "down") return "text-[var(--negative)]";
+  return "text-muted-foreground";
+}
+
+function MarketSummaryStrip() {
+  const mostActive = STOCKS.reduce((a, b) => (a.volume > b.volume ? a : b));
+  const topGainer = STOCKS.reduce((a, b) =>
+    a.changePercent > b.changePercent ? a : b,
+  );
+  const topLoser = STOCKS.reduce((a, b) =>
+    a.changePercent < b.changePercent ? a : b,
+  );
+  const totalVol = STOCKS.reduce((sum, s) => sum + s.volume, 0);
+
+  const cells = [
+    {
+      label: "Market Status",
+      value: "OPEN",
+      valueClass: "text-[var(--positive)]",
+    },
+    {
+      label: "Most Active",
+      value: mostActive.ticker,
+      valueClass: "text-foreground",
+    },
+    {
+      label: "Top Gainer",
+      value: `▲ ${topGainer.ticker}`,
+      valueClass: "text-[var(--positive)]",
+    },
+    {
+      label: "Top Loser",
+      value: `▼ ${topLoser.ticker}`,
+      valueClass: "text-[var(--negative)]",
+    },
+    {
+      label: "Total Volume",
+      value: formatVolume(totalVol),
+      valueClass: "text-foreground",
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-5 gap-px border-b border-border bg-border">
+      {cells.map((cell) => (
+        <div key={cell.label} className="bg-card px-3 py-2">
+          <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            {cell.label}
+          </p>
+          <p className={`mt-0.5 font-mono text-sm font-bold ${cell.valueClass}`}>
+            {cell.value}
+          </p>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <Card key={feature.title}>
-              <CardHeader>
-                <CardTitle>{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Typography variant="muted">{feature.description}</Typography>
-              </CardContent>
-            </Card>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Stock Table
+// ---------------------------------------------------------------------------
+
+function StockTableRow({
+  stock,
+  onClick,
+}: {
+  stock: StockWithMeta;
+  onClick: () => void;
+}) {
+  const changeClass = trendColor(stock.trend);
+
+  return (
+    <TableRow
+      className="cursor-pointer hover:bg-card"
+      onClick={onClick}
+    >
+      <TableCell className="font-mono font-bold text-primary">
+        {stock.ticker}
+      </TableCell>
+      <TableCell className="text-xs text-muted-foreground">
+        {stock.name}
+      </TableCell>
+      <TableCell className="font-mono text-sm">
+        {formatPrice(stock.currentPrice)}
+      </TableCell>
+      <TableCell className={`font-mono text-sm ${changeClass}`}>
+        {formatChange(stock.currentPrice, stock.previousPrice, stock.trend)}
+      </TableCell>
+      <TableCell className={`font-mono text-sm font-bold ${changeClass}`}>
+        {formatChangePercent(stock.changePercent, stock.trend)}
+      </TableCell>
+      <TableCell className="font-mono text-xs text-muted-foreground">
+        {formatVolume(stock.volume)}
+      </TableCell>
+      <TableCell className="font-mono text-xs text-muted-foreground">
+        {formatMarketCap(stock.marketCap)}
+      </TableCell>
+      <TableCell>
+        <Sparkline data={stock.priceHistory.slice(-20)} trend={stock.trend} />
+      </TableCell>
+    </TableRow>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+function MarketOverview() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <TopBar />
+      <MarketSummaryStrip />
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Ticker
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Name
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Price
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Change
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Change %
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Volume
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Mkt Cap
+            </TableHead>
+            <TableHead className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Trend
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {STOCKS.map((stock) => (
+            <StockTableRow
+              key={stock.ticker}
+              stock={stock}
+              onClick={() =>
+                navigate({ to: "/$ticker", params: { ticker: stock.ticker } })
+              }
+            />
           ))}
-        </div>
-      </section>
-
-      <Separator />
-
-      {/* CTA */}
-      <section className="mx-auto max-w-xl space-y-4 text-center">
-        <Heading level={2}>Ready to build?</Heading>
-        <Lead>Clone the repo and have a running app in under a minute.</Lead>
-        <div className="flex items-center justify-center gap-3 pt-2">
-          <Button size="lg">Start building</Button>
-          <Button size="lg" variant="ghost">
-            Read the docs
-          </Button>
-        </div>
-      </section>
+        </TableBody>
+      </Table>
     </div>
   );
 }
